@@ -21,6 +21,10 @@ for LLM traffic:
 
 A chance match is about 1 in 2.5 billion per trap.
 
+**Live:** https://agloe.20.84.32.208.nip.io (landing page at `/`, the console
+at `/console`) · **Contract:** [`0xa172bb2d6275e80a5633a879afe4f545d3b6211f`](https://testnet.monadexplorer.com/address/0xa172bb2d6275e80a5633a879afe4f545d3b6211f)
+on Monad testnet
+
 ## Why Monad
 
 Commit-then-reveal needs a public, tamper-proof clock that a station or lab
@@ -33,7 +37,7 @@ many stations only makes sense on a fast, near-free chain.
 npm install
 cp .env.example .env.local     # add a funded Monad testnet key (faucet.monad.xyz)
 npm run compile && npm run deploy
-npm run dev                    # → http://localhost:3000
+npm run dev                    # → http://localhost:3000/console
 ```
 
 Without a key it runs in simulated chain mode: the whole flow works, it just
@@ -48,29 +52,23 @@ npm run verify -- <proveLeak tx hash>   # re-derives the commitment from calldat
 
 ## Deploy on Kubernetes
 
-The app is one container (`Dockerfile`) plus `k8s/agloe.yaml`: a
-Deployment, a 1Gi volume for the trap store, and a LoadBalancer Service.
+The app is one container (`Dockerfile`) plus `k8s/agloe.yaml`: a Deployment, a
+1Gi volume for the trap store, a Service, and an nginx Ingress with a Let's
+Encrypt certificate. Change the Ingress host to your own.
 
-**With GitHub Actions** (`.github/workflows/deploy.yml`): every push to `main`
-builds the image, pushes it to `ghcr.io/<owner>/<repo>`, and rolls it out. Add
-two repo secrets:
-
-- `KUBE_CONFIG` — `base64 -i kubeconfig` for the target cluster
-- `RELAYER_PRIVATE_KEY` — the funded Monad testnet key
-
-After the first run, make the GHCR package public (Package settings → Change
-visibility) so the cluster can pull it without credentials.
-
-**By hand:**
+One-time setup, against the cluster context you choose:
 
 ```bash
-docker build -t <registry>/agloe:v1 . && docker push <registry>/agloe:v1
-kubectl create namespace agloe
-kubectl -n agloe create secret generic agloe --from-literal=RELAYER_PRIVATE_KEY=0x...
-sed "s|image: agloe:latest.*|image: <registry>/agloe:v1|" k8s/agloe.yaml | kubectl apply -f -
-kubectl -n agloe get svc agloe   # EXTERNAL-IP is the live URL
+k8s/setup/bootstrap.sh <kube-context> <owner>/<repo>
 ```
 
+It creates the `agloe` namespace, the signing-key secret (from `.env.local`),
+and a deployer service account limited to that namespace, then stores that
+account's kubeconfig as the repo's `KUBE_CONFIG` Actions secret. The signing
+key itself never goes to GitHub.
+
+After that, every push to `main` builds the image, pushes it to
+`ghcr.io/<owner>/<repo>`, and rolls it out (`.github/workflows/deploy.yml`).
 It runs one replica because the trap store is a local file on the volume.
 
 ## Demo endpoints (no API keys needed)
@@ -89,7 +87,7 @@ them at real stations and real models.
 - `lib/traps.ts` — trap generation, plant/probe prompts, scoring, local store.
 - `lib/mockLab.ts` — the demo station and models.
 - `app/api/traps/{plant,probe}` — commit + plant, probe + reveal.
-- `app/page.tsx` — the console.
+- `app/page.tsx` — the landing page. `app/console/page.tsx` — the console.
 
 ## Live deployment (Monad testnet · chain 10143)
 

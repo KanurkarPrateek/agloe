@@ -1,0 +1,50 @@
+# A service account CI uses to roll out Agloe. It can only touch the `agloe`
+# namespace, so the kubeconfig stored in GitHub is not a cluster credential.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agloe-deployer
+  namespace: agloe
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: agloe-deployer
+  namespace: agloe
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["services", "configmaps", "persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods", "events"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: agloe-deployer
+  namespace: agloe
+subjects:
+  - kind: ServiceAccount
+    name: agloe-deployer
+    namespace: agloe
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: agloe-deployer
+---
+# Long-lived token for the deployer (read it to build CI's kubeconfig).
+apiVersion: v1
+kind: Secret
+metadata:
+  name: agloe-deployer-token
+  namespace: agloe
+  annotations:
+    kubernetes.io/service-account.name: agloe-deployer
+type: kubernetes.io/service-account-token

@@ -1,9 +1,10 @@
 # Build the image on every push/PR; on main, push it to GHCR and roll it out to k8s.
 #
-# Repo secrets (Settings → Secrets and variables → Actions):
-#   KUBE_CONFIG          base64 kubeconfig for the target cluster:  base64 -i kubeconfig
-#   RELAYER_PRIVATE_KEY  funded Monad testnet key the app signs with
-# Without KUBE_CONFIG the deploy job is skipped and only the image is published.
+# Repo secret (Settings → Secrets and variables → Actions):
+#   KUBE_CONFIG  base64 kubeconfig for the namespaced deployer in k8s/setup/deployer.yaml
+# Without it the deploy job is skipped and only the image is published.
+# The app's signing key is NOT stored in GitHub; it lives only in the cluster
+# (secret `agloe` in namespace `agloe`, created once by hand).
 name: build-and-deploy
 
 on:
@@ -70,7 +71,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-      RELAYER_PRIVATE_KEY: ${{ secrets.RELAYER_PRIVATE_KEY }}
       IMAGE: ${{ needs.build.outputs.image }}
     steps:
       - uses: actions/checkout@v4
@@ -97,17 +97,6 @@ jobs:
           kubectl version --client
           kubectl config current-context
 
-      - name: Create namespace and signing-key secret
-        if: steps.gate.outputs.enabled == 'true'
-        run: |
-          kubectl create namespace agloe --dry-run=client -o yaml | kubectl apply -f -
-          if [ -z "$RELAYER_PRIVATE_KEY" ]; then
-            echo "::warning::RELAYER_PRIVATE_KEY not set — the app runs in simulated chain mode."
-          fi
-          kubectl -n agloe create secret generic agloe \
-            --from-literal=RELAYER_PRIVATE_KEY="$RELAYER_PRIVATE_KEY" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Apply manifests with this build's image
         if: steps.gate.outputs.enabled == 'true'
         run: |
@@ -119,8 +108,10 @@ jobs:
         if: steps.gate.outputs.enabled == 'true'
         run: |
           kubectl -n agloe rollout status deployment/agloe --timeout=180s
-          kubectl -n agloe get pods,svc -o wide
-          ip=$(kubectl -n agloe get svc agloe -o jsonpath='{.status.loadBalancer.ingress[0].ip}{.status.loadBalancer.ingress[0].hostname}')
-          echo "### Agloe deployed" >> "$GITHUB_STEP_SUMMARY"
-          echo "Image: \`${IMAGE}\`" >> "$GITHUB_STEP_SUMMARY"
-          [ -n "$ip" ] && echo "Live: http://$ip" >> "$GITHUB_STEP_SUMMARY" || true
+          kubectl -n agloe get pods,svc,ingress -o wide
+          host=$(kubectl -n agloe get ingress agloe -o jsonpath='{.spec.rules[0].host}')
+          {
+            echo "### Agloe deployed"
+            echo "Image: \`${IMAGE}\`"
+            echo "Live: https://$host"
+          } >> "$GITHUB_STEP_SUMMARY"
