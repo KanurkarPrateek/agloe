@@ -1,6 +1,11 @@
-/** Resolve relative demo endpoints (e.g. /api/demo/station) against this server. */
+/**
+ * Resolve relative demo endpoints (e.g. /api/demo/station) against this server.
+ * Uses loopback when the port is known: behind an ingress the public origin is
+ * not reachable from inside the pod.
+ */
 export function resolveBase(endpoint: string, origin: string) {
-  return (endpoint.startsWith("/") ? `${origin}${endpoint}` : endpoint).replace(/\/+$/, "");
+  const self = process.env.PORT ? `http://127.0.0.1:${process.env.PORT}` : origin;
+  return (endpoint.startsWith("/") ? `${self}${endpoint}` : endpoint).replace(/\/+$/, "");
 }
 
 /** One OpenAI-compatible chat call; returns the reply text. */
