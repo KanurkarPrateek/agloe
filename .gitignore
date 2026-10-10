@@ -1,0 +1,12 @@
+node_modules
+.next
+.env.local
+.env
+.data
+*.log
+.DS_Store
+tsconfig.tsbuildinfo
+next-env.d.ts
+lab/.venv
+lab/data
+lab/adapters

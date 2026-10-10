@@ -1,0 +1,27 @@
+{
+  "name": "agloe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "On-chain proof that a transit station's traffic leaked into a distilled model, on Monad",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "compile": "node scripts/compile.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "verify": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "next": "^15.5.20",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "solc": "0.8.28",
+    "typescript": "^5.7.0"
+  }
+}

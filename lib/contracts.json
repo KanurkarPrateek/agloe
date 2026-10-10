@@ -1,0 +1,416 @@
+{
+  "TrapRegistry": {
+    "abi": [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "commitment",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "stationId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "modelId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "suspectModel",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "hitRate",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "evidenceHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "LeakProven",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "commitment",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "stationId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "planter",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "plantCount",
+            "type": "uint32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "TrapCommitted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "commitment",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "stationUrl",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "trigger",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "answer",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint64",
+            "name": "committedAt",
+            "type": "uint64"
+          }
+        ],
+        "name": "TrapRevealed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "verifier",
+            "type": "address"
+          }
+        ],
+        "name": "VerifierAdded",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "v",
+            "type": "address"
+          }
+        ],
+        "name": "addVerifier",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "commitment",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "stationId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "plantCount",
+            "type": "uint32"
+          }
+        ],
+        "name": "commitTrap",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "stationUrl",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "suspectModel",
+            "type": "string"
+          }
+        ],
+        "name": "getLink",
+        "outputs": [
+          {
+            "internalType": "uint64",
+            "name": "",
+            "type": "uint64"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "stationUrl",
+            "type": "string"
+          }
+        ],
+        "name": "getStation",
+        "outputs": [
+          {
+            "internalType": "uint64",
+            "name": "trapsPlanted",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "leaksProven",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "lastLeakAt",
+            "type": "uint64"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "leakLinks",
+        "outputs": [
+          {
+            "internalType": "uint64",
+            "name": "",
+            "type": "uint64"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "commitment",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "trigger",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "answer",
+                "type": "string"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "salt",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct TrapRegistry.Reveal",
+            "name": "r",
+            "type": "tuple"
+          },
+          {
+            "internalType": "string",
+            "name": "stationUrl",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "suspectModel",
+            "type": "string"
+          },
+          {
+            "internalType": "uint16",
+            "name": "hitRate",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "evidenceHash",
+            "type": "bytes32"
+          }
+        ],
+        "name": "proveLeak",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "stations",
+        "outputs": [
+          {
+            "internalType": "uint64",
+            "name": "trapsPlanted",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "leaksProven",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "lastLeakAt",
+            "type": "uint64"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "traps",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "planter",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "stationId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "committedAt",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint32",
+            "name": "plantCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bool",
+            "name": "revealed",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "verifiers",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "bytecode": "0x6080604052348015600e575f5ffd5b505f80546001600160a01b031916339081178255808252600160208190526040808420805460ff19169092179091555190917f6d05492139c5ea989514a5d2150c028041e5c087e2a39967f67dc7d2655adb8191a2610dbb806100705f395ff3fe608060405234801561000f575f5ffd5b506004361061009b575f3560e01c8063b9693d1b11610063578063b9693d1b146101cb578063e6915221146101de578063f5777cec14610209578063f8a9caec14610271578063fe9ba20a146102a4575f5ffd5b8063442bff941461009f5780636c824487146101475780638da5cb5b146101795780639000b3d6146101a357806399a7f853146101b8575b5f5ffd5b6100fb6100ad3660046109b2565b600260208190525f91825260409091208054600182015491909201546001600160a01b03909216916001600160401b03811690600160401b810463ffffffff1690600160601b900460ff1685565b604080516001600160a01b03909616865260208601949094526001600160401b039092169284019290925263ffffffff90911660608301521515608082015260a0015b60405180910390f35b6101696101553660046109c9565b60016020525f908152604090205460ff1681565b604051901515815260200161013e565b5f5461018b906001600160a01b031681565b6040516001600160a01b03909116815260200161013e565b6101b66101b13660046109c9565b6102b7565b005b6101b66101c63660046109f6565b610350565b6101b66101d9366004610a8e565b6104fe565b6101f16101ec366004610b4d565b6108d6565b6040516001600160401b03909116815260200161013e565b6102476102173660046109b2565b60036020525f90815260409020546001600160401b0380821691600160401b8104821691600160801b9091041683565b604080516001600160401b039485168152928416602084015292169181019190915260600161013e565b6101f161027f366004610bb7565b600460209081525f92835260408084209091529082529020546001600160401b031681565b6102476102b2366004610bd7565b61093b565b5f546001600160a01b031633146103025760405162461bcd60e51b815260206004820152600a60248201526937b7363c9037bbb732b960b11b60448201526064015b60405180910390fd5b6001600160a01b0381165f818152600160208190526040808320805460ff1916909217909155517f6d05492139c5ea989514a5d2150c028041e5c087e2a39967f67dc7d2655adb819190a250565b5f83815260026020819052604090912001546001600160401b0316156103a65760405162461bcd60e51b815260206004820152600b60248201526a747261702065786973747360a81b60448201526064016102f9565b6040805160a08101825233815260208082018581526001600160401b0342811684860190815263ffffffff808816606087019081525f608088018181528c825260028089528a832099518a546001600160a01b03919091166001600160a01b0319909116178a55965160018a8101919091559451989096018054925196511515600160601b0260ff60601b1997909416600160401b026bffffffffffffffffffffffff19909316988616989098179190911794909416179094558682526003909252928320805492939092909161047f91859116610c15565b92506101000a8154816001600160401b0302191690836001600160401b03160217905550336001600160a01b031682847fe6d8e74b591147f1e2007c5e6b4b91f0580fe8cc4832423c8a96baeae31fb5f284426040516104f192919063ffffffff929092168252602082015260400190565b60405180910390a4505050565b335f9081526001602052604090205460ff1661054d5760405162461bcd60e51b815260206004820152600e60248201526d3737ba1030903b32b934b334b2b960911b60448201526064016102f9565b5f88815260026020819052604082209081015490916001600160401b0390911690036105aa5760405162461bcd60e51b815260206004820152600c60248201526b0756e6b6e6f776e20747261760a41b60448201526064016102f9565b6002810154600160601b900460ff16156105f95760405162461bcd60e51b815260206004820152601060248201526f185b1c9958591e481c995d99585b195960821b60448201526064016102f9565b60648361ffff16111561063e5760405162461bcd60e51b815260206004820152600d60248201526c068697452617465203e2031303609c1b60448201526064016102f9565b886106498980610c46565b61065660208c018c610c46565b8c6040013560405160200161066f959493929190610cb0565b60405160208183030381529060405280519060200120146106bf5760405162461bcd60e51b815260206004820152600a602482015269189859081c995d99585b60b21b60448201526064016102f9565b806001015487876040516106d4929190610ce9565b6040518091039020146107195760405162461bcd60e51b815260206004820152600d60248201526c3bb937b7339039ba30ba34b7b760991b60448201526064016102f9565b60028101805460ff60601b1916600160601b1790556040515f906107409087908790610ce9565b60408051918290039091206001848101545f908152600360205292909220805491935091908290600890610785908490600160401b90046001600160401b0316610c15565b82546101009290920a6001600160401b03818102199093169183160217909155825467ffffffffffffffff60801b1916600160801b428316021783556001858101545f908152600460209081526040808320888452909152812080549294509290916107f391859116610c15565b92506101000a8154816001600160401b0302191690836001600160401b031602179055508a7f9ca2a6d372f2af526d1e3e10f8feb910ca1ba4e7221e6fcdc1d0f2e2a7f581108a8a8d805f019061084a9190610c46565b8f806020019061085a9190610c46565b60028b015460405161087b979695949392916001600160401b031690610cf8565b60405180910390a28183600101548c7f5073dc204237e7365d7589ae3ee205951fb2710dc4f2810c7ad828fa5675a1838a8a8a8a426040516108c1959493929190610d51565b60405180910390a45050505050505050505050565b5f60045f86866040516108ea929190610ce9565b604051809103902081526020019081526020015f205f8484604051610910929190610ce9565b604080519182900390912082526020820192909252015f20546001600160401b031695945050505050565b5f5f5f5f60035f8787604051610952929190610ce9565b604080519182900390912082526020808301939093529081015f20815160608101835290546001600160401b03808216808452600160401b83048216958401869052600160801b9092041691909201819052909891975095509350505050565b5f602082840312156109c2575f5ffd5b5035919050565b5f602082840312156109d9575f5ffd5b81356001600160a01b03811681146109ef575f5ffd5b9392505050565b5f5f5f60608486031215610a08575f5ffd5b8335925060208401359150604084013563ffffffff81168114610a29575f5ffd5b809150509250925092565b5f5f83601f840112610a44575f5ffd5b5081356001600160401b03811115610a5a575f5ffd5b602083019150836020828501011115610a71575f5ffd5b9250929050565b803561ffff81168114610a89575f5ffd5b919050565b5f5f5f5f5f5f5f5f60c0898b031215610aa5575f5ffd5b8835975060208901356001600160401b03811115610ac1575f5ffd5b89016060818c031215610ad2575f5ffd5b965060408901356001600160401b03811115610aec575f5ffd5b610af88b828c01610a34565b90975095505060608901356001600160401b03811115610b16575f5ffd5b610b228b828c01610a34565b9095509350610b35905060808a01610a78565b979a969950949793969295919450919260a001359150565b5f5f5f5f60408587031215610b60575f5ffd5b84356001600160401b03811115610b75575f5ffd5b610b8187828801610a34565b90955093505060208501356001600160401b03811115610b9f575f5ffd5b610bab87828801610a34565b95989497509550505050565b5f5f60408385031215610bc8575f5ffd5b50508035926020909101359150565b5f5f60208385031215610be8575f5ffd5b82356001600160401b03811115610bfd575f5ffd5b610c0985828601610a34565b90969095509350505050565b6001600160401b038181168382160190811115610c4057634e487b7160e01b5f52601160045260245ffd5b92915050565b5f5f8335601e19843603018112610c5b575f5ffd5b8301803591506001600160401b03821115610c74575f5ffd5b602001915036819003821315610a71575f5ffd5b81835281816020850137505f828201602090810191909152601f909101601f19169091010190565b606081525f610cc3606083018789610c88565b8281036020840152610cd6818688610c88565b9150508260408301529695505050505050565b818382375f9101908152919050565b608081525f610d0b60808301898b610c88565b8281036020840152610d1e81888a610c88565b90508281036040840152610d33818688610c88565b9150506001600160401b038316606083015298975050505050505050565b608081525f610d64608083018789610c88565b61ffff9590951660208301525060408101929092526060909101529291505056fea2646970667358221220def6f85b50c1c1c61e0e8e226bde3b90274414d4e11392bbdb64a6f7407e9f6964736f6c634300081c0033"
+  }
+}

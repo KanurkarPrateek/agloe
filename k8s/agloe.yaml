@@ -1,0 +1,96 @@
+# Agloe on Kubernetes. Create the secret first (see README "Deploy on Kubernetes").
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agloe
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agloe
+  namespace: agloe
+data:
+  TRAP_ADDRESS: "0xa172bb2d6275e80a5633a879afe4f545d3b6211f"
+---
+# Trap secrets and the demo station's harvest live on this volume, so planted
+# traps survive restarts. One replica only: the store is a local file.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: agloe-data
+  namespace: agloe
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agloe
+  namespace: agloe
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: agloe
+  template:
+    metadata:
+      labels:
+        app: agloe
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+        - name: web
+          image: agloe:latest # replace with your registry image
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: agloe
+            - secretRef:
+                name: agloe # RELAYER_PRIVATE_KEY
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /api/traps
+              port: 3000
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/traps
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: agloe-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agloe
+  namespace: agloe
+spec:
+  type: LoadBalancer # public IP on AKS/EKS/GKE; use an Ingress instead if you have one
+  selector:
+    app: agloe
+  ports:
+    - port: 80
+      targetPort: 3000

@@ -1,0 +1,126 @@
+# Build the image on every push/PR; on main, push it to GHCR and roll it out to k8s.
+#
+# Repo secrets (Settings → Secrets and variables → Actions):
+#   KUBE_CONFIG          base64 kubeconfig for the target cluster:  base64 -i kubeconfig
+#   RELAYER_PRIVATE_KEY  funded Monad testnet key the app signs with
+# Without KUBE_CONFIG the deploy job is skipped and only the image is published.
+name: build-and-deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.image.outputs.ref }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Image name (GHCR needs lowercase)
+        id: image
+        run: |
+          name="${REGISTRY}/${GITHUB_REPOSITORY,,}"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "ref=$name:sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      RELAYER_PRIVATE_KEY: ${{ secrets.RELAYER_PRIVATE_KEY }}
+      IMAGE: ${{ needs.build.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check cluster access is configured
+        id: gate
+        run: |
+          if [ -z "$KUBE_CONFIG" ]; then
+            echo "::notice::KUBE_CONFIG secret not set — image published, deploy skipped."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: azure/setup-kubectl@v4
+        if: steps.gate.outputs.enabled == 'true'
+
+      - name: Write kubeconfig
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          mkdir -p ~/.kube
+          echo "$KUBE_CONFIG" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
+          kubectl version --client
+          kubectl config current-context
+
+      - name: Create namespace and signing-key secret
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          kubectl create namespace agloe --dry-run=client -o yaml | kubectl apply -f -
+          if [ -z "$RELAYER_PRIVATE_KEY" ]; then
+            echo "::warning::RELAYER_PRIVATE_KEY not set — the app runs in simulated chain mode."
+          fi
+          kubectl -n agloe create secret generic agloe \
+            --from-literal=RELAYER_PRIVATE_KEY="$RELAYER_PRIVATE_KEY" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply manifests with this build's image
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          sed "s|image: agloe:latest.*|image: ${IMAGE}|" k8s/agloe.yaml > /tmp/agloe.yaml
+          grep -n "image:" /tmp/agloe.yaml
+          kubectl apply -f /tmp/agloe.yaml
+
+      - name: Wait for rollout
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          kubectl -n agloe rollout status deployment/agloe --timeout=180s
+          kubectl -n agloe get pods,svc -o wide
+          ip=$(kubectl -n agloe get svc agloe -o jsonpath='{.status.loadBalancer.ingress[0].ip}{.status.loadBalancer.ingress[0].hostname}')
+          echo "### Agloe deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "Image: \`${IMAGE}\`" >> "$GITHUB_STEP_SUMMARY"
+          [ -n "$ip" ] && echo "Live: http://$ip" >> "$GITHUB_STEP_SUMMARY" || true
