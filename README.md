@@ -93,6 +93,10 @@ them at real stations and real models.
 
 `TrapRegistry` — [`0xa172bb2d6275e80a5633a879afe4f545d3b6211f`](https://testnet.monadexplorer.com/address/0xa172bb2d6275e80a5633a879afe4f545d3b6211f)
 
+The source is verified on the explorer (exact match). `npm run verify:source`
+re-checks that `contracts/TrapRegistry.sol` compiles to the deployed bytecode
+and publishes it.
+
 ## Limits
 
 - A model only memorizes facts it sees repeatedly, so plant each trap several
