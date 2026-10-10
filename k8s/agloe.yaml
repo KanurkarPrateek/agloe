@@ -101,8 +101,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: agloe.20.84.32.208.nip.io # replace with your own host
-      http:
+    - host: agloe.prateekkanurkar.in # replace with your own host
+      http: &routes
         paths:
           - path: /
             pathType: Prefix
@@ -111,7 +111,13 @@ spec:
                 name: agloe
                 port:
                   number: 80
+    - host: agloe.20.84.32.208.nip.io # works with no DNS setup
+      http: *routes
+  # one certificate per host, so a host whose DNS isn't ready can't block the other
   tls:
+    - hosts:
+        - agloe.prateekkanurkar.in
+      secretName: agloe-domain-tls
     - hosts:
         - agloe.20.84.32.208.nip.io
       secretName: agloe-tls

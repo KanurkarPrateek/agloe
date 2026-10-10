@@ -21,8 +21,8 @@ for LLM traffic:
 
 A chance match is about 1 in 2.5 billion per trap.
 
-**Live:** https://agloe.20.84.32.208.nip.io (landing page at `/`, the console
-at `/console`) · **Contract:** [`0xa172bb2d6275e80a5633a879afe4f545d3b6211f`](https://testnet.monadexplorer.com/address/0xa172bb2d6275e80a5633a879afe4f545d3b6211f)
+**Live:** https://agloe.prateekkanurkar.in (mirror: https://agloe.20.84.32.208.nip.io).
+Landing page at `/`, the console at `/console` · **Contract:** [`0xa172bb2d6275e80a5633a879afe4f545d3b6211f`](https://testnet.monadexplorer.com/address/0xa172bb2d6275e80a5633a879afe4f545d3b6211f)
 on Monad testnet
 
 ## Why Monad

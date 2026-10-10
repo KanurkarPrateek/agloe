@@ -119,7 +119,7 @@ jobs:
       - name: Smoke test the live site
         if: steps.gate.outputs.enabled == 'true'
         run: |
-          host=$(kubectl -n agloe get ingress agloe -o jsonpath='{.spec.rules[0].host}')
+          host=$(kubectl -n agloe get ingress agloe -o jsonpath='{.spec.rules[1].host}')
           ip=$(kubectl -n agloe get ingress agloe -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           # Go straight to the ingress IP so the check doesn't depend on public DNS.
           resolve=()
