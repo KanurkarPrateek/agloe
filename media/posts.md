@@ -9,11 +9,11 @@ Code: https://github.com/KanurkarPrateek/agloe
 
 ## 1. Project post
 
-### X (275 characters)
+### X (270 characters)
 
-Cheap "Claude" resellers log your prompts and sell them as training data. Nobody could prove it.
+There's a black market for "Claude" tokens: up to 95% off, because your prompts are the product.
 
-So I built Agloe: plant a fact that exists nowhere else, lock its hash on Monad, and catch the model that repeats it.
+Agloe proves it: plant a fact that exists nowhere else, lock its hash on Monad, catch the model that repeats it.
 
 https://agloe.20.84.32.208.nip.io
 
@@ -46,11 +46,11 @@ Thanks to @monad, @monad_dev and @geeky_kartikey.
 
 ---
 
-## 2. Demo video post — attach `agloe-demo.mp4` (69s)
+## 2. Demo video post — attach `agloe-demo.mp4` (72s)
 
 ### X (269 characters)
 
-Agloe, running end to end in 69 seconds:
+Agloe, running end to end in 72 seconds:
 
 1. Plant a fake fact, hash committed on Monad
 2. The reseller quietly logs it
@@ -65,7 +65,7 @@ Here is Agloe running end to end.
 
 In this demo I plant a made-up protocol with a secret value and commit its hash on Monad testnet. The demo reseller answers normally and quietly logs all five copies into the dataset it sells. A clean model has never heard of the protocol. A model trained on the reseller's logs repeats the secret, and the commitment is revealed on-chain.
 
-Every transaction in the video is real and on Monad testnet. The waits for confirmation are trimmed.
+Every transaction in the video is real and on Monad testnet. The waits for confirmation are trimmed. Narration by ElevenLabs.
 
 Try it yourself: https://agloe.20.84.32.208.nip.io/console
 
@@ -73,17 +73,17 @@ Try it yourself: https://agloe.20.84.32.208.nip.io/console
 
 ---
 
-## 3. Ad video post — attach `agloe-ad.mp4` (35s)
+## 3. Ad video post — attach `agloe-ad.mp4` (51s)
 
-### X (219 characters)
+### X (273 characters)
 
 In the 1930s, two mapmakers invented a town to catch anyone who copied their map.
 
 It worked.
 
-Now your prompts are the map. Agloe is the town.
+Today there's a black market for AI tokens, and your prompts are the map. Agloe is the town.
 
-Voice by @elevenlabsio. Built on Monad.
+Voice and sound by @elevenlabsio. Built on Monad.
 
 @monad @monad_dev @geeky_kartikey
 
@@ -91,11 +91,11 @@ Voice by @elevenlabsio. Built on Monad.
 
 In the 1930s, two mapmakers invented a town to catch anyone who copied their map. It worked.
 
-Today the map is your prompts, and the copier is a discount API reseller selling your traffic as training data.
+Today there is a black market for AI tokens: "Claude" at up to 95% off. The discount is the bait. The real product is your prompts, logged and sold to labs as training data.
 
 Agloe is the town that isn't there: a planted fact, a hash locked on Monad, and proof the day a model repeats it.
 
-Voice by ElevenLabs. Built on Monad.
+Voice and sound by ElevenLabs. Built on Monad.
 
 https://agloe.20.84.32.208.nip.io
 
